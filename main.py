@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Path, Query, Body
-from typing import Optional
-from pydantic import BaseModel, Field
+from typing import Optional, List, Set, Dict
+from pydantic import BaseModel, Field, HttpUrl
 
 app = FastAPI()
 
@@ -10,9 +10,15 @@ async def index():
     return {"Hello": "World"}
 
 
+class Image(BaseModel):
+    url: HttpUrl
+
+
 class Item(BaseModel):
     name: str
     description: Optional[str] = Field(None, max_length=255)
+    tags: Optional[List[str]] = Field([])  # Empty array
+    image: Optional[Image] = Field(None)
 
 
 @app.post("/items/{id}/")
@@ -27,5 +33,5 @@ async def create_item(
         "item": item
     }
 
-# https://fastapi.tiangolo.com/tutorial/body-fields/
-# Body validation using Fields() ^^
+# https://fastapi.tiangolo.com/tutorial/body-nested-models/
+# How to nest models ^^
