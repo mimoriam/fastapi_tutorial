@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from typing import Optional
 from pydantic import BaseModel
 
@@ -15,17 +15,16 @@ class Item(BaseModel):
     description: Optional[str] = None
 
 
-@app.post('/')
-async def create_item(item: Item):
-    return {
-        "item": item
-    }
-
-
-@app.post('/items/{id}/')
+@app.post("/items/{id}/")
 # http://localhost:8000/items/2/?query=hello
-async def create_item2(id: int, item: Item, query: Optional[str] = None):
+# async def create_item2(id: int, item: Item, query: Optional[str] = Query(None, max_length=25)):
+# This is only for optional parameters. What if we want required ones for the query but also validation? Simple:
+async def create_item2(id: int, item: Item, query: str = Query(..., max_length=25)):
+    # Now query is required and ENFORCED to be of max_length = 25
     return {
         "id": id,
         "item": item
     }
+
+# https://fastapi.tiangolo.com/tutorial/query-params-str-validations/
+# This goes waaaaay into detail but not doing most of the code here so check it out ^^
