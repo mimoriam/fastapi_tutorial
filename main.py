@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from typing import Optional
+from pydantic import BaseModel
 
 app = FastAPI()
 
@@ -9,13 +10,22 @@ async def index():
     return {"Hello": "World"}
 
 
-@app.get("/items/")
-async def items(wow: int = 0, limit: int = 10):
-    # http://localhost:8000/items/?wow=4&limit=20
-    return {wow: limit}  # This line would give {"4" : 20} response based on that query parameter
+class Item(BaseModel):
+    name: str
+    description: Optional[str] = None
 
 
-@app.get("/items/a")
-async def items(wow: Optional[str] = None):
-    # http://localhost:8000/items/a?wow
-    return {wow}  # This would give nothing because wow is now optional
+@app.post('/')
+async def create_item(item: Item):
+    return {
+        "item": item
+    }
+
+
+@app.post('/items/{id}/')
+# http://localhost:8000/items/2/?query=hello
+async def create_item2(id: int, item: Item, query: Optional[str] = None):
+    return {
+        "id": id,
+        "item": item
+    }
